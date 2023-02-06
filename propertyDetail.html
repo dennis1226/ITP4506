@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" class="pt-page-flipInLeft">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" src="assets/jslib/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/popper-1.16.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/bootstrap-4.5.2.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="assets/jslib/jquery.cookie.js"></script>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="assets/css/index.css" rel="stylesheet">
+    <link href="assets/css/propertyDetails.css" rel="stylesheet">
+    <script type="text/javascript" src="assets/jslib/propertyDetail.js"></script>
+    <script src="assets/jslib/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" href="assets/css/bootstrap-datepicker.css" />
+    <link href="assets/css/animations.css" rel="stylesheet">
+    <title>Property Details-Dream House property HK Inc.</title>
+    <style>
+        #map {
+            height: 400px;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    <script>
+
+        $(document).ready(function () {
+            $("#user").hide();
+            $("#user").click(function () {
+                $("#userTypeButton").text("Name");
+                userType = "user";
+                $("#user").hide();
+                $("#agent").show();
+                $("#manager").show();
+            });
+            $("#agent").click(function () {
+                $("#userTypeButton").text("Price");
+                userType = "agent";
+                $("#user").show();
+                $("#agent").hide();
+                $("#manager").show();
+            });
+            $("#manager").click(function () {
+                $("#userTypeButton").text("Place");
+                userType = "manager";
+                $("#user").show();
+                $("#agent").show();
+                $("#manager").hide();
+            });
+            //for top menu bar (check login)
+            var usertype = $.cookie('usertype');
+            var useremail = $.cookie('useremail');
+            var password = $.cookie('password');
+            switch (usertype) {
+                case 'user':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                case 'agent':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                case 'manager':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                default:
+                    break;
+
+            }
+            $("#LogOut").click(function() {
+                $.removeCookie('usertype');
+                $.removeCookie('useremail');
+                $.removeCookie('password');
+                $("#Management").attr('hidden');
+                $("#ContactBar").show();
+            });
+
+            var d = new Date();
+            var month = d.getMonth() + 1;
+            var day = d.getDate();
+            var output = d.getFullYear() + '/' +
+                (month < 10 ? '0' : '') + month + '/' +
+                (day < 10 ? '0' : '') + day;
+            $.getJSON("assets/json/property_buy.json", function (getPropertyDetails) {//getProperty data
+                var i = 0;
+                var id = "";
+                var name = "";
+                var size = "";
+                var price = "";
+                var layout = "";
+                var Age = "";
+                var Src = "";
+                var Src2 = "";
+                var Src3 = "";
+                var SrcM = "";
+                $.getJSON("assets/json/agent.json", function (getAgent) { //getAgent data
+                            id = getPropertyDetails["tsuen_wan"][0].id;
+                            name = getPropertyDetails["tsuen_wan"][0].name;
+                            size = getPropertyDetails["tsuen_wan"][0].size;
+                            price = getPropertyDetails["tsuen_wan"][0].price;
+                            layout = getPropertyDetails["tsuen_wan"][0].layout;
+                            Age = getPropertyDetails["tsuen_wan"][0].Age;
+                            Src = getPropertyDetails["tsuen_wan"][0].Src;
+                            Src2 = getPropertyDetails["tsuen_wan"][0].Src2;
+                            Src3 = getPropertyDetails["tsuen_wan"][0].Src3;
+                            SrcM = getPropertyDetails["tsuen_wan"][0].SrcM;
+                            $(".mainBody").append(
+                                "<nav class=\"navbar navbar-light bg-light\">\n" +
+                                "  <span class=\"navbar-brand mb-0 h1\">" + name + "<label style='margin-left: 5px' type=\"button\" class=\"btn btn-outline-danger\">Hot</label></span>\n" +
+                                " <a href='AgentDetails.html'>" +
+                                "    <div id='AgentPicture'>" +
+                                "       <img style='width: 120px;height: 120px;margin-left: 800px' id='" + getAgent["agent"][0].id + "' src='" + getAgent["agent"][0].AgentPhoto + "' class='img-circle'>" +
+                                "   </div>" +
+                                "</a>" +
+                                "<label for='' style='float: left'>" +
+                                "<svg width=\"20px\" height=\"20px\" viewBox=\"0 0 16 16\" class=\"bi bi-broadcast-pin\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707zm2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 0 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708zm5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708zm2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM6 8a2 2 0 1 1 2.5 1.937V15.5a.5.5 0 0 1-1 0V9.937A2 2 0 0 1 6 8z\"/>\n" +
+                                "</svg>" + getAgent["agent"][0].name + "<br>" +
+                                "<svg width=\"20px\" height=\"20px\" viewBox=\"0 0 16 16\" class=\"bi bi-sun\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                                "  <path d=\"M3.5 8a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0z\"/>\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M8.202.28a.25.25 0 0 0-.404 0l-.91 1.255a.25.25 0 0 1-.334.067L5.232.79a.25.25 0 0 0-.374.155l-.36 1.508a.25.25 0 0 1-.282.19l-1.532-.245a.25.25 0 0 0-.286.286l.244 1.532a.25.25 0 0 1-.189.282l-1.509.36a.25.25 0 0 0-.154.374l.812 1.322a.25.25 0 0 1-.067.333l-1.256.91a.25.25 0 0 0 0 .405l1.256.91a.25.25 0 0 1 .067.334L.79 10.768a.25.25 0 0 0 .154.374l1.51.36a.25.25 0 0 1 .188.282l-.244 1.532a.25.25 0 0 0 .286.286l1.532-.244a.25.25 0 0 1 .282.189l.36 1.508a.25.25 0 0 0 .374.155l1.322-.812a.25.25 0 0 1 .333.067l.91 1.256a.25.25 0 0 0 .405 0l.91-1.256a.25.25 0 0 1 .334-.067l1.322.812a.25.25 0 0 0 .374-.155l.36-1.508a.25.25 0 0 1 .282-.19l1.532.245a.25.25 0 0 0 .286-.286l-.244-1.532a.25.25 0 0 1 .189-.282l1.508-.36a.25.25 0 0 0 .155-.374l-.812-1.322a.25.25 0 0 1 .067-.333l1.256-.91a.25.25 0 0 0 0-.405l-1.256-.91a.25.25 0 0 1-.067-.334l.812-1.322a.25.25 0 0 0-.155-.374l-1.508-.36a.25.25 0 0 1-.19-.282l.245-1.532a.25.25 0 0 0-.286-.286l-1.532.244a.25.25 0 0 1-.282-.189l-.36-1.508a.25.25 0 0 0-.374-.155l-1.322.812a.25.25 0 0 1-.333-.067L8.203.28zM8 2.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z\"/>\n" +
+                                "</svg>" + "Account Manager<br>" +
+                                "<svg width=\"20px\" height=\"20px\" viewBox=\"0 0 16 16\" class=\"bi bi-clock-history\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z\"/>\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z\"/>\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z\"/>\n" +
+                                "</svg>" + "Years of Service: " + getAgent["agent"][0].Year + "<br>" +
+                                "<svg width=\"20px\" height=\"20px\" viewBox=\"0 0 16 16\" class=\"bi bi-telephone-inbound\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                                "  <path fill-rule=\"evenodd\" d=\"M15.854.146a.5.5 0 0 1 0 .708L11.707 5H14.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v2.793L15.146.146a.5.5 0 0 1 .708 0zm-12.2 1.182a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z\"/>\n" +
+                                "</svg>" + getAgent["agent"][0].Contact + "<br><br>" +
+
+                                "<button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#staticBackdrop\">\n" +
+                                "        Talk with agent now\n" +
+                                "</button><br><br>" +
+                                "<button style='margin-left: 12px' type=\"button\" id=\"AppointmentBtn\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#AppointmentForm\">\n" +
+                                "    Appointment me\n" +
+                                "</button>"+
+                                "</label>" +
+                                "</nav>" +
+                                "<div class='container'>" +
+                                "   <div class=\"row\">" +
+                                "        <div class='col-12'>\n" +
+                                "<nav><div class=\"nav nav-tabs\" id=\"nav-tab\" role=\"tablist\">"+" <a class=\"nav-link active\" id=\"nav-photo-tab\" data-toggle=\"tab\" href=\"#nav-photo\" role=\"tab\" aria-controls=\"nav-photo\" aria-selected=\"true\">Photo</a>"+" <a class=\"nav-link\" id=\"nav-vr-tab\" data-toggle=\"tab\" href=\"#nav-vr\" role=\"tab\" aria-controls=\"nav-vr\" aria-selected=\"true\">VR</a></nav>"+"<div class=\"tab-content\" id=\"nav-tabContent\">"+" <div class=\"tab-pane fade show active\" id=\"nav-photo\" role=\"tabpanel\" aria-labelledby=\"nav-photo-tab\">"+
+                                "            <div id=\"carouselExampleIndicators\" class=\"carousel slide\" data-ride=\"carousel\" >\n" +
+                                "                <div class=\"carousel-inner\" >\n" +
+                                "                    <div class=\"carousel-item active pt-page-moveFromTopFade\">\n" +
+                                "                        <img class=\"d-block w-100\" src=\"" + Src + "\" alt=\"First slide\"\n" +
+                                "                             style=\"height: 350px;width: 300px;\">\n" +
+                                "                        <div class=\"carousel-caption d-none d-md-block\">\n" +
+                                "                            <h5></h5>\n" +
+                                "                            <p></p>\n" +
+                                "                        </div>\n" +
+                                "                    </div>\n" +
+                                "                    <div class=\"carousel-item pt-page-moveFromTopFade\">\n" +
+                                "                        <img class=\"d-block w-100\" src=\"" + Src2 + "\" alt=\"Second slide\"\n" +
+                                "                             style=\"height: 350px;width: 300px;\">\n" +
+                                "                        <div class=\"carousel-caption d-none d-md-block\">\n" +
+                                "                            <h5></h5>\n" +
+                                "                            <p></p>\n" +
+                                "                        </div>\n" +
+                                "                    </div>\n" +
+                                "                    <div class=\"carousel-item pt-page-moveFromTopFade\">\n" +
+                                "                        <img class=\"d-block w-100\" src=\"" + Src3 + "\" alt=\"Third slide\"\n" +
+                                "                             style=\"height: 350px;width: 300px;\">\n" +
+                                "                        <div class=\"carousel-caption d-none d-md-block\">" +
+                                "                            <h5></h5>" +
+                                "                            <p></p>" +
+                                "                        </div>" +
+                                "                    </div>" +
+                                "                <a class=\"carousel-control-prev\" href=\"#carouselExampleIndicators\" role=\"button\" data-slide=\"prev\">" +
+                                "                    <span class=\"carousel-control-prev-icon\" aria-hidden=\"true\"></span>\n" +
+                                "                    <span class=\"sr-only\">Previous</span>" +
+                                "                </a>" +
+                                "                <a class=\"carousel-control-next\" href=\"#carouselExampleIndicators\" role=\"button\" data-slide=\"next\">" +
+                                "                    <span class=\"carousel-control-next-icon\" aria-hidden=\"true\"></span>\n" +
+                                "                    <span class=\"sr-only\">Next</span>" +
+                                "                </a>" +
+                                "            </div>" +
+                                "   </div></div>" +"<div class=\"tab-pane fade\" id=\"nav-vr\" role=\"tabpanel\" aria-labelledby=\"nav-vr-tab\"><iframe src=\"https://vr360.midland.com.hk/#/?pano_id=168705&amp;isIframe=true&amp;lang=en&amp;help=0&amp;vr=0&amp;play=1&amp;brand=0&amp;qs=1\" width=\"350px\" height=\"300px\" frameborder=\"0\" allow=\"fullscreen\" allowfullscreen=\"\" title=\"MATTERPORT\"></iframe></div>"+
+                                "   <div class=\"col\">" +
+                                "       <div class=\"best-features about-features\" style='margin-top: 55px;'>\n" +
+                                "                   <div class=\"left-content\">\n" +
+                                "                    <h4><span  class=\"badge badge-secondary\">Sales </span>" + " $" + price + " / Month </h4><h3> Total Price: $"+ price*size+"</h3>" +
+                                "                     <div class=\"alert alert-success\" role=\"alert\">\n" +
+                                "                     A dedicated person will help you check the price for free 95% were successfully approved by the bank" +
+                                "                   <button type=\"button\" class=\"btn btn-info\">Contact US</button>" +
+                                "                    </div>" +
+                                "                 </div>\n" +
+                                "                <table class='table'><tbody><tr><td>size:</td><td>"+size+"</td></tr> " +
+                                "                  <tr><td>Layout: " +"</td><td>"+ layout + "</td></tr>" +
+                                "                  <tr><td>Age: " +"</td><td>"+ Age + "</td></tr>" +
+                                "                  <tr><td>Last Update : " +"</td><td>"+ output + "</td></tr></tbody></table>" +
+                                "           </div></div>" + "<div class='row'> <img src='" + SrcM + "' class='img-fluid' alt='Responsive image'></div> " + "</div></div>"
+                            );
+                            $("#callAgentBox").append("" +
+                                "<div class=\"modal-header\">\n" +
+                                "<h5 class=\"modal-title\" id=\"staticBackdropLabel\">" + getAgent["agent"][0].name + "</h5>\n" +
+                                "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">\n" +
+                                "<span aria-hidden=\"true\">&times;</span>\n" +
+                                "</button>\n" +
+                                "</div>" +
+                                "<div class=\"modal-body\" id='ContactBody'>" +
+                                "   <div class=\"container\" id='forAddContent'>\n" +
+                                "                    <div class=\"row justify-content-start\" id='abc'>\n" +
+                                "                         <img width='50' height='50' src=" + getAgent["agent"][0].AgentPhoto + ">" +
+                                "                        <div class=\"col-8 col-sm-4 \" id='withAgentmeetingBox'>\n" +
+                                "                            GoodMorning, My name is " + getAgent["agent"][0].name + "\n" + "How can i help you? " +
+                                "                        </div>\n" +
+                                "                    </div>\n" +
+                                "                    <div class=\"row justify-content-end\">\n" +
+                                "                    </div>\n" +
+                                "   </div>" +
+                                "</div>" +
+                                "<div class=\"modal-footer\">\n" +
+                                "<div class='row' id='insideBody'>" +
+                                "<div class='col'>" +
+                                "   <input id='talkWithAgentInputBox' class=\"form-control form-control-lg\" type=\"text\" placeholder=\" \">" +
+                                "</div>" +
+                                "<button type=\"button\" id='sendMessage'>\n" +
+                                "  <img src='assets/img/EnterInput.png' alt='' width='30px' height='30px' id='pressEnterToTalkWithAgent' >" +
+                                "</button>" +
+                                "</div>" +
+                                " </div>"
+                            );
+                            if(usertype == "user"){
+                                $("#AppointmentBtn").show();
+                            }else if(usertype == "agent"){
+                                $("#AppointmentBtn").hide();
+                            }else if(usertype == "manager"){
+                                $("#AppointmentBtn").hide();
+                            }else{
+                                $("#AppointmentBtn").hide();
+                            }
+                    })
+
+                    $("#callAgentBox #insideBody #sendMessage").click(function () {
+                        var wantToInput = $(".row #talkWithAgentInputBox").val();
+                        if (wantToInput.length == 0) {
+
+                        } else {
+                            $("#forAddContent").append("" +
+                                "<div class=\"row justify-content-end\">\n" +
+                                "    <div class=\"col-8 col-sm-4\" id='withAgentmeetingBox'>\n" +
+                                wantToInput +
+                                "    </div>\n" +
+                                "</div>");
+                        }
+                        $(".row #talkWithAgentInputBox").val("");
+                    });
+                    $(".mainBody #AgentPicture img").click(function () {
+                        var i = $(this).attr("id");
+                        $.cookie('selectAgentView', i);
+                    });
+            });
+            $("#callAgent").click(function () {
+                $("#modal").show();
+            });
+            $("#AppointmentEmail").val();
+
+            $("#AppointmentSubmit").click(function (){
+                $("#loadingSubmitIcon").show(1000);
+                $("#loadingSubmitIcon").hide(1000);
+                //$("#loadingSubmitIcon").attr("src","assets/img/finish.png").delay(2000);
+                $("#loadingSubmitCheck").show(2000);
+                setTimeout(
+                    function() {
+                        $("#closeTheAppoinment").click();
+                        $("#loadingSubmitIcon").hide();
+                        $("#loadingSubmitCheck").hide();
+                    },
+                    3000);
+
+            })
+
+        })
+    </script>
+
+</head>
+
+<body class="pt-page-rotateCubeRightIn">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html">Dream House property HK Inc.</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
+            aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+    </button>
+    <div class="collapse navbar-collapse" id="navbarsExample04">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="About.html" id="Home">About</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="propertyList.html">Property List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="ContactBar">Agent List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="Management.html" id="Management" hidden>Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="MortgageCal">MortgageCal</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" id="LoginOrRegisterPlace">
+            <a class="btn btn-outline-success my-2 my-sm-0" href="#" id="EnquNum">Enquiry:2436-8333</a>
+            <a class="nav-link" href="Login.html" id="Login">Login</a>
+            <a class="nav-link" href="Register.html" id="Register">Register</a>
+            <!--<input class="form-control" type="text" placeholder="Search">-->
+        </form>
+
+    </div>
+</nav>
+
+<div class="mainBody">
+
+</div>
+
+
+<div class="modal fade pt-page-moveFromBottom" id="AppointmentForm" data-backdrop="static" data-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="AppointmentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="NewProfileInformation">
+                <h5 class="modal-title" id="AppointmentLabel">Appointment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" id="closeTheAppoinment">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="AppointmentEmail">Email address<span style="color: red">*</span></label>
+                    <div class="row">
+                        <input type="email" class="form-control" id="AppointmentEmail" placeholder="Input your email" style="width: 150px;margin-left: 15px">
+                        <div class="col" style="width: 100px">
+                            <select type="text" class="form-control" id="emailType">
+                                <option>@test.com</option>
+                                <option>@abc.com</option>
+                                <option>@def.com</option>
+                                <option>@ghi.com</option>
+                                <option>@jkl.com</option>
+                                <option>@mno.com</option>
+                                <option>@pqr.com</option>
+                                <option>@stu.com</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="AppointmentFullName">Full Name<span style="color: red">*</span></label>
+                        </div>
+                        <div class="col">
+                            <label for="AppointmentNickName">Nick Name<span style="color: red">*</span></label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control" id="AppointmentFullName"
+                                   placeholder="user1" disabled>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" id="AppointmentNickName"
+                                   placeholder="user1" disabled >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="AppointmentGender">Gender<span style="color: red">*</span></label>
+                        </div>
+                        <div class="col">
+                            <label for="AppointmentPhone">Phone number<span style="color: red;margin-right: 20px">*</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <select type="text" class="form-control" id="AppointmentGender">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                            <input type="text" class="form-control" placeholder="+852" disabled style="width: 70px;margin-left: 93px">
+                            <div class="col">
+                                <input type="text" class="form-control" id="AppointmentPhone">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    Choose the AppointmentDate
+                    <div class="container">
+                        <div class="row">
+                                <div class="form-group">
+                                    <div class='input-group date' id='datetimepicker1'>
+                                        <input type='text' class="form-control" />
+                                        <span class="input-group-addon">
+               <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-calendar-date" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+  <path d="M6.445 11.688V6.354h-.633A12.6 12.6 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61h.675zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82h-.684zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23z"/>
+</svg>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker1').datepicker({
+                                        autoclose: true,
+                                        maxViewMode: 2,
+                                        todayBtn: "linked",
+                                        clearBtn: true,
+                                        orientation: "bottom auto",
+                                        todayHighlight: true
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border text-success" role="status" style="display: none" id="loadingSubmitIcon">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <svg style="display: none" id="loadingSubmitCheck" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelProfileInfo">Cancel</button>
+                <button type="button" class="btn btn-primary" id="AppointmentSubmit">Appointment Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade pt-page-moveFromBottom" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" style="height: 390px">
+        <div class="modal-content" style="border-radius:15px;margin-top: 10%" id="callAgentBox">
+
+        </div>
+    </div>
+</div>
+<footer class="text-muted">
+    <div class="container">
+        <p style="margin-left: auto;margin-right: auto">
+            Dream House property HK Inc. 2015-2020.
+        </p>
+        <p class="float-right">
+            <a href="#" class="btn btn-dark">Back to top</a>
+        </p>
+    </div>
+</footer>
+</body>
+
+</html>

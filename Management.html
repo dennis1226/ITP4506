@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en" class="pt-page-flipInLeft">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CompanyInfo</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="assets/jslib/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/popper-1.16.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/bootstrap-4.5.2.min.js"></script>
+    <script src="assets/jslib/jquery.blockUI.js"></script>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <script src="assets/jslib/jquery.cookie.js"></script>
+    <link href="assets/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="assets/css/Management.css" rel="stylesheet">
+    <link href="assets/css/FormButton.css" rel="stylesheet">
+    <link href="assets/css/animations.css" rel="stylesheet">
+    <script src="assets/jslib/jquery.table2excel.js"></script>
+    <script type="text/javascript" src="Winwheel.js"></script>
+
+    <link rel="stylesheet" href="Winwheel.css" type="text/css" />
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    <script>
+        $(function() {
+            $(".exportToExcel").click(function(e){
+                var table = $(this).prev('.table');
+                if(table && table.length){
+                    var preserveColors = (table.hasClass('table') ? true : false);
+                    $(table).table2excel({
+                        exclude: ".noExl",
+                        name: "Export Data",
+                        filename: "Export Data" + ".xls",
+                        fileext: ".xls",
+                        exclude_img: true,
+                        exclude_links: true,
+                        exclude_inputs: true,
+                        preserveColors: preserveColors
+                    });
+                }
+            });
+            
+        });
+    </script>
+    <script type="text/javascript">
+        function waitUI() {
+            $.blockUI({
+                message: 'Process successful',
+                css: {
+                    height: '100px',
+                    width: '500px',
+                    font: '80px',
+                    align:'center'
+                }
+          });
+            setTimeout($.unblockUI, 400);
+        }
+        function myFunction() {
+            var x = document.getElementById("password");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+            var y = document.getElementById("newAgentPassword");
+            if (y.type === "password") {
+                y.type = "text";
+            } else {
+                y.type = "password";
+            }
+            var z = document.getElementById("newPassword");
+            if (z.type === "password") {
+                z.type = "text";
+            } else {
+                z.type = "password";
+            }
+        }
+    </script>
+    <script>
+        $(function(){
+            var $select = $("#newAge,#newAgentAge");
+            for (i=1;i<=100;i++){
+                $select.append($('<option></option>').val(i).html(i))
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            //for top menu bar (check login)
+            var usertype = $.cookie('usertype');
+            var useremail = $.cookie('useremail');
+            var password = $.cookie('password');
+            var userid = $.cookie('userid');
+            switch (usertype) {
+                case 'user':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+
+                    $("#Management").removeAttr('hidden');
+                    $("#user-page").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    $("#v-pills-userComments-tab").remove();
+                    $("#v-pills-propertyManagement-tab").remove();
+                    $("#v-pills-accountManagement-tab").remove();
+                    $("#v-pills-AppointmentRecord-tab-tab").remove();
+                    $("#v-pills-Appointmenting-tab").remove();
+                    break;
+                case 'agent':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#agent-page").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    $("#v-pills-accountManagement-tab").remove();
+                    break;
+                case 'manager':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#manager-page").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    $("#uploadNewPropertyBtn").remove();
+
+                    $("#v-pills-Appointment-tab").remove();
+                    $("#v-pills-Appointmenting-tab").remove();
+                    break;
+                default:
+                    break;
+
+            }
+
+            $.getJSON("assets/json/agent.json", function (agent) {
+                if(usertype == "manager"){
+                    for (var i=0;i<agent["agent"].length;i++){
+                        $(".UserCommentsBody").append(
+                            "<tr>\n" +
+                            "   <th scope=\"row\"><img src='"+agent["agent"][i].AgentPhoto+"' alt='' width='100px' height='100px'></th>\n" +
+                            "       <td>"+agent["agent"][i].id+"</td>\n" +
+                            "       <td>"+agent["agent"][i].name+"</td>\n" +
+                            "       <td>+852 "+agent["agent"][i].Contact+"</td>\n" +
+                            "       <td><button id='"+agent["agent"][i].id+"' value='"+agent["agent"][i].id+"' style='background-color: #5959FF;color: white;''>View Comments</button></td>\n" +
+                            "</tr>"
+                        );
+                    }
+                }else if (usertype == "agent"){
+                    for (var i=0;i<agent["agent"].length;i++){
+                        if(userid == agent["agent"][i].id){
+                            $(".UserCommentsBody").append(
+                                "<tr>\n" +
+                                "   <th scope=\"row\"><img src='"+agent["agent"][i].AgentPhoto+"' alt='' width='100px' height='100px'></th>\n" +
+                                "       <td>"+agent["agent"][i].id+"</td>\n" +
+                                "       <td>"+agent["agent"][i].name+"</td>\n" +
+                                "       <td>"+agent["agent"][i].Contact+"</td>\n" +
+                                "       <td><button id='"+agent["agent"][i].id+"' value='"+agent["agent"][i].id+"' style='background-color: #5959FF;color: white;''>View Comments</button></td>\n" +
+                                "</tr>"
+                            );
+                        }
+                    }
+                }
+                //view comment
+                $(".UserCommentsBody button").click(function (){
+                    var j=$(this).attr('id');
+                    $.cookie('selectAgentView', j);
+                    window.location.href = 'AgentDetails.html';
+                });
+            });
+            //profile user
+            if(usertype == "user"){
+                var CheckedNum = 0;
+                $.getJSON("assets/json/account.json", function (account) {
+                    for (var i=0; i<account["user"].length; i++){
+                        if(useremail == account["user"][i].email){
+                            $("#email").val(account["user"][i].email); //first get email
+                            $("#password").val(account["manager"][i].password);//first get password
+                            CheckedNum = account["user"][i].id;
+                            $.getJSON("assets/json/agent.json", function (agentInfo) {
+                                for(var j=0; j<agentInfo["user"].length; j++){
+                                    if(CheckedNum == agentInfo["user"][j].id){
+                                        $("#Clientname").val(agentInfo["user"][j].name);
+                                        $("#phone").val(agentInfo["user"][j].Contact);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            //profile agent
+            if(usertype == "agent"){
+                var CheckedNum = 0;
+                $.getJSON("assets/json/account.json", function (account) {
+                    for (var i=0; i<account["agent"].length; i++){
+                        if(useremail == account["agent"][i].email){
+                            $("#email").val(account["agent"][i].email); //first get email
+                            $("#password").val(account["agent"][i].password);//first get password
+                            CheckedNum = account["agent"][i].id;
+                            $.getJSON("assets/json/agent.json", function (agentInfo) {
+                                for(var j=0; j<agentInfo["agent"].length; j++){
+                                    if(CheckedNum == agentInfo["agent"][j].id){
+                                        $("#Clientname").val(agentInfo["agent"][j].name);
+                                        $("#phone").val(agentInfo["agent"][j].Contact);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            //profile manager
+            if(usertype == "manager"){
+                var CheckedNum = 0;
+                $.getJSON("assets/json/account.json", function (account) {
+                    for (var i=0; i<account["manager"].length; i++){
+                        if(useremail == account["manager"][i].email){
+                            $("#email").val(account["manager"][i].email); //first get email
+                            $("#password").val(account["manager"][i].password);//first get password
+                            CheckedNum = account["manager"][i].id;
+                            $.getJSON("assets/json/agent.json", function (agentInfo) {
+                                for(var j=0; j<agentInfo["manager"].length; j++){
+                                    if(CheckedNum == agentInfo["manager"][j].id){
+                                        $("#Clientname").val(agentInfo["manager"][j].name);
+                                        $("#phone").val(agentInfo["manager"][j].Contact);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            var nowAgentID = "";
+            //account Management List (Print)
+            $.getJSON("assets/json/agent.json", function (Agent) {
+                $.getJSON("assets/json/account.json", function (AgentAccount) {
+                    var agentEmail = "";
+                    for (var i = 0; i <Agent["agent"].length;i++) {
+                        agentEmail = AgentAccount["agent"][i].email;
+                        $("#PrintAgentList").append(
+                            "<tr>\n" +
+                            "    <th scope=\"row\">"+Agent["agent"][i].id+"</th>\n" +
+                            "    <td>Agent</td>\n" +
+                            "    <td>"+Agent["agent"][i].name+"</td>\n" +
+                            "    <td>+852 "+Agent["agent"][i].Contact+"</td>\n" +
+                            "    <td>"+agentEmail+"</td>\n" +
+                            "    <td>"+Agent["agent"][i].JoinDate+"</td>\n" +
+                            "    <td><input id='CheckEnabled' type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                            "    <td>\n" +
+                            "    <button disabled>None</button>\n" +
+                            "    </td>\n" +
+                            "</tr>"
+                        );
+                        nowAgentID = Agent["agent"][i].id;
+                        nowAgentID++;
+                    }
+                    for (var k = 0; k <Agent["user"].length;k++) {
+                        agentEmail = AgentAccount["user"][k].email;
+                        $("#PrintAgentList").append(
+                            "<tr>\n" +
+                            "    <th scope=\"row\">"+nowAgentID+"</th>\n" +
+                            "    <td>user</td>\n" +
+                            "    <td>"+Agent["user"][k].name+"</td>\n" +
+                            "    <td>+852 "+Agent["user"][k].Contact+"</td>\n" +
+                            "    <td>"+agentEmail+"</td>\n" +
+                            "    <td>"+Agent["user"][k].JoinDate+"</td>\n" +
+                            "    <td><input id='CheckEnabled' type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                            "    <td>\n" +
+                            "    <button disabled>None</button>\n" +
+                            "    </td>\n" +
+                            "</tr>"
+                        );
+                        nowAgentID++;
+                    }
+                    //Add new Agent
+                    $("#NewAgent").click(function (){
+                        if($("#newAgentEmail").val() && $("#newAgentName").val() &&  $("#newAgentPhone").val() && $("#newAgentPassword").val() != ""){
+                            var email = $("#newAgentEmail").val()+"@test.com";
+                            var name = $("#newAgentName").val();
+                            var phone = "+852 "+$("#newAgentPhone").val();
+                            var Password = $("#newAgentPassword").val();
+                            var d = new Date();
+                            var month = d.getMonth()+1;
+                            var day = d.getDate();
+                            var output = d.getFullYear() + '/' + (month<10 ? '0' : '') + month + '/' + (day<10 ? '0' : '') + day;
+                            $("#PrintAgentList").append(
+                                "<tr>\n" +
+                                "    <th scope=\"row\">"+nowAgentID+"</th>\n" +
+                                "    <td>Agent</td>\n" +
+                                "    <td>"+name+"</td>\n" +
+                                "    <td>"+phone+"</td>\n" +
+                                "    <td>"+email+"</td>\n" +
+                                "    <td>"+output+"</td>\n" +
+                                "    <td><input id='userCheckEnabled' type=\"checkbox\" checked=\"checked\" ></td>\n" +
+                                "    <td><button disabled>None</button></td>" +
+                                "</tr>");
+                            $("#CreateAgentPageclose").click();
+                            nowAgentID = parseInt(nowAgentID)+1;
+                            $("#newAgentEmail").val("");
+                            $("#newAgentName").val("");
+                            $("#newAgentPhone").val("");
+                            $("#newAgentPassword").val("")
+
+                        }else{
+                            alert("Please Input all element")
+                        }
+                    });
+                    $("#AccountSearch").keyup(function() {
+                        $("#PrintAgentList").find("tr").hide();
+                        $("#PrintAgentList").find("tr").filter(":contains('" + $("#AccountSearch").val() + "')").show();
+                    });
+                });
+            });
+            $("#EditProfileBtn").click(function (){
+
+                $("#newFullName").val($("#Clientname").val());
+                $("#newPhone").val( $("#phone").val());
+                $("#newPassword").val( $("#password").val());
+            });
+            $("#UpdateProfileInfo").click(function (){
+                $("#email").val($("#newEmail").val()+"@test.com");
+                $("#Clientname").val($("#newFullName").val());
+                $("#phone").val($("#newPhone").val());
+                $("#password").val($("#newPassword").val());
+                $("#newPasswordConfirm").val("");
+                $("#closeTheUpdateBtn").click();
+            });
+            $("#LogOut").click(function () {
+                $.removeCookie('usertype');
+                $.removeCookie('useremail');
+                $.removeCookie('password');
+                $("#Management").attr('hidden');
+                $("#ContactBar").show();
+            });
+            if(usertype == "agent"){
+                var nowppID = 13;
+                $.getJSON("assets/json/property_buy.json", function (genProperty) {
+                    var i =0;
+                        for(i=0;i<3;i++) {
+                            $("#genPropertyData").append("<tr id='"+genProperty["tsuen_wan"][i].id+"'>\n" +
+                                "                            <th scope=\"row\">" + genProperty["tsuen_wan"][i].id + "</th>\n" +
+                                "                            <td><img src=\"" + genProperty["tsuen_wan"][i].Src + "\" width=\"100\" height=\"100\"></td>\n" +
+                                "                            <td>" + genProperty["tsuen_wan"][i].name + "</td>\n" +
+                                "                            <td>" + genProperty["tsuen_wan"][i].price + "</td>\n" +
+                                "                            <td>" + genProperty["tsuen_wan"][i].size + "</td>\n" +
+                                "                            <td>$" + (genProperty["tsuen_wan"][i].price) * (genProperty["tsuen_wan"][i].size) + "</td>\n" +
+                                "                            <td>" + genProperty["tsuen_wan"][i].layout + "</td>\n" +
+                                "                            <td>" + genProperty["tsuen_wan"][i].Age + "</td>\n" +
+                                "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                                "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                                "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                                "                            <td>\n" +
+                                "<button style=\"text-align: center\" type=\"button\" id=\"EditPropertyBtn\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#uploadEditProperty\" value='"+genProperty["tsuen_wan"][i].id+"'>\n" +
+                                "                        Edit" +
+                                "                    </button>" +
+
+                                "                                <button type=\"button\" class=\"btn btn-danger\" id='deletePropertyInfo' value='"+genProperty["tsuen_wan"][i].id+"'>Delete</button>\n" +
+                                "                            </td>\n" +
+                                "                        </tr>"
+                            );
+                        }
+                    $("#genPropertyData #deletePropertyInfo").click(function (){
+                        $("#genPropertyData #"+$(this).val()).remove();
+                    });
+                    var EditingNum = 0;
+                    $("#genPropertyData #EditPropertyBtn").click(function (){
+                        EditingNum = $(this).val();
+                        var Address = $("#genPropertyData #"+$(this).val()).find("td").eq(1).text();
+                        var Price = $("#genPropertyData #"+$(this).val()).find("td").eq(2).text();
+                        var Size = $("#genPropertyData #"+$(this).val()).find("td").eq(3).text();
+                        var totalPrice = $("#genPropertyData #"+$(this).val()).find("td").eq(4).text();
+                        var layout = $("#genPropertyData #"+$(this).val()).find("td").eq(5).text();
+                        var Age = $("#genPropertyData #"+$(this).val()).find("td").eq(6).text();
+                        $("#EditPropertyAddress").val(Address);
+                        $("#EditPropertyPrice").val(Price);
+                        $("#EditPropertySize").val(Size);
+                        $("#EditPropertyLayout").val(layout);
+                        $("#EditPropertyAge").val(Age);
+                        $("#EditInsideButtonuploadProperty").click(function (){
+                            $("#genPropertyData #"+EditingNum).find("td").eq(1).text($("#EditPropertyAddress").val());
+                            $("#genPropertyData #"+EditingNum).find("td").eq(2).text( $("#EditPropertyPrice").val());
+                            $("#genPropertyData #"+EditingNum).find("td").eq(3).text( $("#EditPropertySize").val());
+                            $("#genPropertyData #"+EditingNum).find("td").eq(4).text( $("#EditPropertyPrice").val() * $("#EditPropertySize").val());
+                            $("#genPropertyData #"+EditingNum).find("td").eq(5).text( $("#EditPropertyLayout").val()+"Rm");
+                            $("#genPropertyData #"+EditingNum).find("td").eq(6).text( $("#EditPropertyAge").val()+"Yrs");
+                            $("#uploadEditPropertyCloseBtn2").click();
+                        });
+                    });
+                });
+                //input new Property
+                    $("#InsideButtonuploadProperty").click(function (){
+                        $("#genPropertyData").append(
+                            "                        <tr id="+nowppID+"> "+
+                            "                            <th scope=\"row\">"+nowppID+"</th>\n" +
+                            "                            <td><img src=\"assets/img/big1.jpg\" width=\"100\" height=\"100\"></td>\n" +
+                            "                            <td>"+$("#newPropertyAddress").val()+"</td>\n" +
+                            "                            <td>$"+$("#newPropertyPrice").val()+"</td>\n" +
+                            "                            <td>"+$("#newPropertySize").val()+"</td>\n" +
+                            "                            <td>$"+$("#newPropertyPrice").val()*$("#newPropertySize").val()+"</td>\n" +
+                            "                            <td>"+$("#newPropertyLayout").val()+"Rm</td>\n" +
+                            "                            <td>"+$("#newPropertyAge").val()+"Yrs</td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()'></td>\n" +
+                            "                            <td>" +
+                            "<button style=\"text-align: center\" type=\"button\" id=\"EditPropertyBtn\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#uploadEditProperty\" value='"+nowppID+"'>\n" +
+                            "                        Edit" +
+                            "                    </button>" +
+                            "                                <button type=\"button\" class=\"btn btn-danger\" id='deletePropertyInfo' value="+nowppID+">Delete</button>\n" +
+                            "                            </td>\n" +
+                            "                        </tr>"
+                        )
+                        $("#genPropertyData #deletePropertyInfo").click(function (){
+                            $("#genPropertyData #"+$(this).val()).remove();
+                        });
+                        var nownumber = nowppID;
+                        $("#genPropertyData #EditPropertyBtn").click(function (){
+                            var Address = $("#genPropertyData #"+nownumber).find("td").eq(1).text();
+                            var Price = $("#genPropertyData #"+$(this).val()).find("td").eq(2).text();
+                            var Size = $("#genPropertyData #"+$(this).val()).find("td").eq(3).text();
+                            var totalPrice = $("#genPropertyData #"+$(this).val()).find("td").eq(4).text();
+                            var layout = $("#genPropertyData #"+$(this).val()).find("td").eq(5).text();
+                            var Age = $("#genPropertyData #"+$(this).val()).find("td").eq(6).text();
+                            $("#EditPropertyAddress").val(Address);
+                            $("#EditPropertyPrice").val(Price);
+                            $("#EditPropertySize").val(Size);
+                            $("#EditPropertyLayout").val(layout);
+                            $("#EditPropertyAge").val(Age);
+                            $("#EditInsideButtonuploadProperty").click(function (){
+                                $("#genPropertyData #"+nownumber).find("td").eq(1).text($("#EditPropertyAddress").val());
+                                $("#genPropertyData #"+nownumber).find("td").eq(2).text( $("#EditPropertyPrice").val());
+                                $("#genPropertyData #"+nownumber).find("td").eq(3).text( $("#EditPropertySize").val());
+                                $("#genPropertyData #"+nownumber).find("td").eq(4).text( $("#EditPropertyPrice").val() * $("#EditPropertySize").val());
+                                $("#genPropertyData #"+EditingNum).find("td").eq(5).text( $("#EditPropertyLayout").val()+"Rm");
+                                $("#genPropertyData #"+EditingNum).find("td").eq(6).text( $("#EditPropertyAge").val()+"Yrs");
+                                $("#uploadEditPropertyCloseBtn2").click();
+                            });
+                        });
+                        $("#viewCloseTheUpdateBtn2").click();
+                        $("#newPropertyAddress").val("");
+                        $("#newPropertyPrice").val("");
+                        $("#newPropertySize").val("");
+                        $("#newPropertyLayout").val("");
+                        $("#newPropertyAge").val("");
+                        nowppID++;
+                    });
+                $("#genPropertyData #EditPropertyBtn").click(function (){
+                    var Address = $("#genPropertyData #"+nowppID).find("td").eq(1).text();
+                    var Price = $("#genPropertyData #"+$(this).val()).find("td").eq(2).text();
+                    var Size = $("#genPropertyData #"+$(this).val()).find("td").eq(3).text();
+                    var totalPrice = $("#genPropertyData #"+$(this).val()).find("td").eq(4).text();
+                    var layout = $("#genPropertyData #"+$(this).val()).find("td").eq(5).text();
+                    var Age = $("#genPropertyData #"+$(this).val()).find("td").eq(6).text();
+                    $("#EditPropertyAddress").val(Address);
+                    $("#EditPropertyPrice").val(Price);
+                    $("#EditPropertySize").val(Size);
+                    $("#EditPropertyLayout").val(layout);
+                    $("#EditPropertyAge").val(Age);
+                    $("#EditInsideButtonuploadProperty").click(function (){
+                        $("#genPropertyData #"+nowppID).find("td").eq(1).text($("#EditPropertyAddress").val());
+                        $("#genPropertyData #"+nowppID).find("td").eq(2).text( $("#EditPropertyPrice").val());
+                        $("#genPropertyData #"+nowppID).find("td").eq(3).text( $("#EditPropertySize").val());
+                        $("#genPropertyData #"+nowppID).find("td").eq(4).text( $("#EditPropertyPrice").val() * $("#EditPropertySize").val());
+                        $("#genPropertyData #"+EditingNum).find("td").eq(5).text( $("#EditPropertyLayout").val()+"Rm");
+                        $("#genPropertyData #"+EditingNum).find("td").eq(6).text( $("#EditPropertyAge").val()+"Yrs");
+                        $("#uploadEditPropertyCloseBtn2").click();
+                    });
+                });
+                $("#EditProfileRm").click(function (){
+                    var a = $(this).text();
+                    $("#EditPropertyRoomType").text(a);
+                })
+                $("#EditProfileAreaOrRm").click(function (){
+                    var a = $(this).text();
+                    $("#EditPropertyRoomType").text(a);
+                })
+            }
+            if(usertype == "manager"){
+                $.getJSON("assets/json/property_buy.json", function (genProperty) {
+                    var i =0;
+                    for(i=0;i<3;i++) {
+                        $("#genPropertyData").append("<tr>\n" +
+                            "                            <th scope=\"row\">" + genProperty["tsuen_wan"][i].id + "</th>\n" +
+                            "                            <td><img src=\"" + genProperty["tsuen_wan"][i].Src + "\" width=\"100\" height=\"100\"></td>\n" +
+                            "                            <td>" + genProperty["tsuen_wan"][i].name + "</td>\n" +
+                            "                            <td>$" + genProperty["tsuen_wan"][i].price + "</td>\n" +
+                            "                            <td>" + genProperty["tsuen_wan"][i].size + "</td>\n" +
+                            "                            <td>$" + (genProperty["tsuen_wan"][i].price) * (genProperty["tsuen_wan"][i].size) + "</td>\n" +
+                            "                            <td>" + genProperty["tsuen_wan"][i].Layout + "</td>\n" +
+                            "                            <td>" + genProperty["tsuen_wan"][i].Age + "</td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()' disabled></td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()' disabled></td>\n" +
+                            "                            <td><input type=\"checkbox\" checked=\"checked\" onclick='waitUI()' disabled></td>\n" +
+                            "                            <td>\n" +
+                            "                                <button type=\"button\" class=\"btn btn-info\" disabled>None</button>\n" +
+                            "                            </td>\n" +
+                            "                        </tr>"
+                        );
+                    }
+                });
+            }
+
+            if(usertype == "user"){
+                $("#AppointmentBodySearch thead").append(
+                    "<tr>\n" +
+                    "<th scope=\"col\">Appointment Number</th>\n" +
+                    "<th scope=\"col\">Name</th>\n" +
+                    "<th scope=\"col\">Photo</th>\n" +
+                    "<th scope=\"col\">Metting Date</th>\n" +
+                    "<th scope=\"col\">Metting Time</th>\n" +
+                    "<th scope=\"col\">Metting Location</th>\n" +
+                    "<th scope=\"col\">Rank</th>\n" +
+                    "<th scope=\"col\">Commant</th>\n" +
+                    "<th scope=\"col\">Action</th>\n" +
+                    "<th scope=\"col\" id='holderbox'></th>\n" +
+                    "</tr>");
+
+                    $("#AppointmentBody").append("<tr>\n" +
+                        "<td>"+1+"</td>"+
+                        "<td>Choi Fa Kwan</td>"+
+                        "<td><img src='assets/img/agent12.jpg' alt='' style='width: 50px;height: 50px'></td>"+
+                        "<td>2020/11/7</td>"+
+                        "<td>4:30 p.m.</td><br>" +
+                        "<td>20 Tsing Yi Road<br>" +
+                        "Tsing Yi Island<br>" +
+                        "New Territories</td>"+
+                        "<td><div class=\"con\">\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star1'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star2'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star3'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star4'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star5'></p>\n" +
+                        "                            </div></td>"+
+                        "<td><input type='text'></td>"+
+                        "<td><button id='userAppointsubmitBtn' style='font-size: 10px'>Submit Commant</button></td>"+
+                        "</tr>");
+
+
+                $("#star1").click(function (){
+                    $(".fa-star").css("color","black");
+                    $("#star1").css("color","yellow");
+                })
+                $("#star2").click(function (){
+                    $(".fa-star").css("color","black");
+                    $("#star1,#star2").css("color","yellow");
+                })
+                $("#star3").click(function (){
+                    $(".fa-star").css("color","black");
+                    $("#star1,#star2,#star3").css("color","yellow");
+                })
+                $("#star4").click(function (){
+                    $(".fa-star").css("color","black");
+                    $("#star1,#star2,#star3,#star4").css("color","yellow");
+                })
+                $("#star5").click(function (){
+                    $(".fa-star").css("color","black");
+                    $("#star1,#star2,#star3,#star4,#star5").css("color","yellow");
+                })
+                $("#userAppointsubmitBtn").click(function (){
+                    alert("Thank's for give command");
+                    $('#AppointmentBody tr:nth-child(1)').remove().animate({
+
+                    },1000);
+                    $("#AppointmentRecordTable thead").append(
+                        "<tr>\n" +
+                        "<th scope=\"col\">Appointment Number</th>\n" +
+                        "<th scope=\"col\">Name</th>\n" +
+                        "<th scope=\"col\">Photo</th>\n" +
+                        "<th scope=\"col\">Metting Date</th>\n" +
+                        "<th scope=\"col\">Metting Time</th>\n" +
+                        "<th scope=\"col\">Metting Location</th>\n" +
+                        "<th scope=\"col\">Rank</th>\n" +
+                        "<th scope=\"col\">you Given Commant</th>\n" +
+                        "<th scope=\"col\">Agent Reply Commant</th>\n" +
+                        "</tr>");
+
+                    $("#AppointmentRecordBody").append("<tr>\n" +
+                        "<td>"+1+"</td>"+
+                        "<td>Choi Fa Kwan</td>"+
+                        "<td><img src='assets/img/agent12.jpg' alt='' style='width: 50px;height: 50px'></td>"+
+                        "<td>2020/11/7</td>"+
+                        "<td>4:30 p.m.</td><br>" +
+                        "<td>20 Tsing Yi Road<br>" +
+                        "Tsing Yi Island<br>" +
+                        "New Territories</td>"+
+                        "<td><div class=\"con\">\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star6'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star7'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star8'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star9'></p>\n" +
+                        "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star10'></p>\n" +
+                        "                            </div></td>"+
+                        "<td>This agent is smart</td>"+
+                        "<td>You are a smart propertybuyer</td>"+
+                        "</tr>");
+                    $("#star6,#star7,#star8").css("color","yellow");
+                })
+
+            }
+            if(usertype == "agent"){
+                $("#AppointmentBodySearch thead").append(
+                    "<tr>\n" +
+                    "<th scope=\"col\">Appointment Number</th>\n" +
+                    "<th scope=\"col\">Name</th>\n" +
+                    "<th scope=\"col\">Metting Date</th>\n" +
+                    "<th scope=\"col\">Metting Time</th>\n" +
+                    "<th scope=\"col\">Metting Location</th>\n" +
+                    "<th scope=\"col\">Accept action</th>\n" +
+                    "<th scope=\"col\">Cancel action</th>\n" +
+                    "</tr>");
+
+                $("#AppointmentBody").append("<tr>\n" +
+                    "<td>"+1+"</td>"+
+                    "<td>user1</td>"+
+                    "<td>2020/11/20</td>"+
+                    "<td>4:30 p.m.</td>"+
+                    "<td>" +
+                    "<a>20 Tsing Yi Road<br>" +
+                    "Tsing Yi Island<br>" +
+                    "New Territories</a>" +
+                    "</td>"+
+                    "<td><button id='AgentAppointAcceptBtn' style='font-size: 10px;background-image: linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%);'>Accept<br>Appointment</button></td>"+
+                    "<td><button id='AgentAppointCancelBtn' style='font-size: 10px;background-image: linear-gradient( 135deg, #FFF6B7 10%, #F6416C 100%);'>Cancel<br>Appointment</button></td>"+
+                    "</tr>");
+
+                $("#AgentAppointAcceptBtn").click(function (){
+                    alert("Accept success");
+                    $('#AppointmentBody tr:nth-child(1)').remove();
+                    $("#AppointmentingTable thead").append(
+                        "<tr>\n" +
+                        "<th scope=\"col\">Appointment Number</th>\n" +
+                        "<th scope=\"col\">Name</th>\n" +
+                        "<th scope=\"col\">Metting Date</th>\n" +
+                        "<th scope=\"col\">Metting Time</th>\n" +
+                        "<th scope=\"col\">Metting Location</th>\n" +
+                        "<th scope=\"col\">Finish Action</th>\n" +
+                        "<th scope=\"col\">Cancel Action</th>\n" +
+                        "</tr>"
+                    );
+
+                    $("#AppointmentingBody").append(
+                        "<tr>\n" +
+                        "<td>"+1+"</td>"+
+                        "<td>user1</td>"+
+                        "<td>2020/11/7</td>"+
+                        "<td>4:30 p.m.</td>" +
+                        "<td>"+
+                        "<a>20 Tsing Yi Road<br>" +
+                        "Tsing Yi Island<br>" +
+                        "New Territories</a>" +
+                        "</td>"+
+                        "<td><button id='Appointmentfinish' style='background-image: linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%);'>finish</button></td>"+
+                        "<td><button id='AppointmentCancel' style='background-image: linear-gradient( 135deg, #FFF6B7 10%, #F6416C 100%);'>Cancel</button></td>"+
+                        "</tr>"
+                    );
+                    $("#Appointmentfinish").click(function (){
+                        alert("finish this appointment");
+                        $("#AppointmentRecordTable thead").append(
+                            "<tr>\n" +
+                            "<th scope=\"col\">Appointment Number</th>\n" +
+                            "<th scope=\"col\">Name</th>\n" +
+                            "<th scope=\"col\">Metting Date</th>\n" +
+                            "<th scope=\"col\">Metting Time</th>\n" +
+                            "<th scope=\"col\">Metting Location</th>\n" +
+                            "<th scope=\"col\">Rank</th>\n" +
+                            "<th scope=\"col\">Buyer Commant</th>\n" +
+                            "<th scope=\"col\">Your Commant</th>\n" +
+                            "<th scope=\"col\">Confirm</th>\n" +
+                            "</tr>"
+                        );
+                        $('#AppointmentingBody tr:nth-child(1)').remove();
+                        $("#AppointmentRecordBody").append(
+                            "<tr>\n" +
+                            "<td>"+1+"</td>"+
+                            "<td>user1</td>"+
+                            "<td>2020/11/7</td>"+
+                            "<td>4:30 p.m.</td>" +
+                            "<td>"+
+                            "<a>20 Tsing Yi Road<br>" +
+                            "Tsing Yi Island<br>" +
+                            "New Territories</a>" +
+                            "</td>"+
+                            "<td><div class=\"con\" disabled>\n" +
+                            "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star1'></p>\n" +
+                            "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star2'></p>\n" +
+                            "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star3'></p>\n" +
+                            "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star4'></p>\n" +
+                            "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star5'></p>\n" +
+                            "                            </div></td>"+
+                            "<td><input type='text' placeholder='You are smart' disabled></td>"+
+                            "<td><input type='text' id='AgentAppointmentCommandConfirm' placeholder='Give Command'></td>"+
+                            "<td><input type='button' id='AgentAppointmentrecordConfirm' value='Confirm' style='color: white;border-radius: 15px;background-image: linear-gradient( 135deg, #CE9FFC 10%, #7367F0 100%);'></td>"+
+                            "</tr>"
+                        );
+                        $("#star1").click(function (){
+                            $(".fa-star").css("color","black");
+                            $("#star1").css("color","yellow");
+                        })
+                        $("#star2").click(function (){
+                            $(".fa-star").css("color","black");
+                            $("#star1,#star2").css("color","yellow");
+                        })
+                        $("#star3").click(function (){
+                            $(".fa-star").css("color","black");
+                            $("#star1,#star2,#star3").css("color","yellow");
+                        })
+                        $("#star4").click(function (){
+                            $(".fa-star").css("color","black");
+                            $("#star1,#star2,#star3,#star4").css("color","yellow");
+                        })
+                        $("#star5").click(function (){
+                            $(".fa-star").css("color","black");
+                            $("#star1,#star2,#star3,#star4,#star5").css("color","yellow");
+                        })
+                        $("#AgentAppointmentrecordConfirm").click(function (){
+                            alert("submit successful");
+                            $("#AgentAppointmentCommandConfirm").prop('disabled','disabled');
+                            $("#AgentAppointmentrecordConfirm").prop('disabled','disabled');
+                            $(".con").prop('disabled','disabled');
+                        })
+                    })
+                    $("#AppointmentCancel").click(function (){
+                        $('#AppointmentingBody tr:nth-child(1)').remove();
+                        alert("remove successful");
+                    })
+                    $("#star6,#star7,#star8").css("color","yellow");
+                })
+                $("#AgentAppointCancelBtn").click(function (){
+                    alert("Cancel success");
+                    $('#AppointmentBody tr:nth-child(1)').remove();
+                })
+
+            }
+            if(usertype == "manager"){
+                $("#AppointmentRecordTable thead").append(
+                    "<tr>\n" +
+                    "<th scope=\"col\">Appointment Number</th>\n" +
+                    "<th scope=\"col\">buyer Name</th>\n" +
+                    "<th scope=\"col\">Agent Name</th>\n" +
+                    "<th scope=\"col\">Agent Photo</th>\n" +
+                    "<th scope=\"col\">Metting Date</th>\n" +
+                    "<th scope=\"col\">Metting Time</th>\n" +
+                    "<th scope=\"col\">Metting Location</th>\n" +
+                    "<th scope=\"col\">Buyer given rank</th>\n" +
+                    "<th scope=\"col\">Agent given rank</th>\n" +
+                    "<th scope=\"col\">Buyer Commant</th>\n" +
+                    "<th scope=\"col\">Agent Commant</th>\n" +
+                    "</tr>"
+                );
+                $('#AppointmentRecordBody').append(
+                    "<tr>"+
+                    "<td>"+1+"</td>"+
+                    "<td>user1</td>"+
+                    "<td>Choi Fa Kwan</td>"+
+                    "<td><img src='assets/img/agent12.jpg' alt='' style='width: 50px;height: 50px'></td>"+
+                    "<td>2020/11/7</td>"+
+                    "<td>4:30 p.m.</td><br>" +
+                    "<td>20 Tsing Yi Road<br>" +
+                    "Tsing Yi Island<br>" +
+                    "New Territories</td>"+
+                    "<td><div class=\"con\">\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star1'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star2'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star3'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star4'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star5'></p>\n" +
+                    "    </div>" +
+                    "</td>"+
+                    "<td><div class=\"con\">\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star6'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star7'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star8'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star9'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star10'></p>\n" +
+                    "    </div>" +
+                    "</td>"+
+                    "<td><input type='text' value='You are smart for carry me' disabled></td>"+
+                    "<td><input type='text' value='you also smart'd disabled></td>"+
+                    "</tr>"+
+
+                    "<tr>"+
+                    "<td>"+2+"</td>"+
+                    "<td>user2</td>"+
+                    "<td>Choi Fa Kwan</td>"+
+                    "<td><img src='assets/img/agent12.jpg' alt='' style='width: 50px;height: 50px'></td>"+
+                    "<td>2020/11/7</td>"+
+                    "<td>6:30 p.m.</td><br>" +
+                    "<td>20 Tsing Yi Road<br>" +
+                    "Tsing Yi Island<br>" +
+                    "New Territories</td>"+
+                    "<td><div class=\"con\">\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star1'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star2'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star3'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star4'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star5'></p>\n" +
+                    "    </div>" +
+                    "</td>"+
+                    "<td><div class=\"con\">\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star6'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star7'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star8'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star9'></p>\n" +
+                    "    <p class=\"fa fa-star\" aria-hidden=\"true\" id='star10'></p>\n" +
+                    "    </div>" +
+                    "</td>"+
+                    "<td><input type='text' value='You are smart for carry me' disabled></td>"+
+                    "<td><input type='text' value='you also smart' disabled></td>"+
+                    "</tr>"
+                );
+                $(".fa-star").css("color","black");
+                $("#star1,#star2,#star3,#star4").css("color","yellow");
+                $("#star6,#star7").css("color","yellow");
+            }
+        })
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html">Dream House property HK Inc.</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
+            aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExample04">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="About.html" id="Home">About</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="propertyList.html">Property List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="ContactBar">Agent List</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="Management.html" id="Management" hidden>Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="MortgageCal">MortgageCal</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" id="LoginOrRegisterPlace">
+            <a class="btn btn-outline-success my-2 my-sm-0" href="#" id="EnquNum">Enquiry:2436-8333</a>
+            <a class="nav-link" href="Login.html" id="Login">Login</a>
+            <a class="nav-link" href="Register.html" id="Register">Register</a>
+            <!--<input class="form-control" type="text" placeholder="Search">-->
+        </form>
+    </div>
+</nav>
+<div class="row">
+    <div class="col-1">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+             aria-orientation="vertical">
+            <a class="nav-link " id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home"
+               role="tab" aria-controls="v-pills-home" aria-selected="false">Home</a>
+
+            <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile"
+               role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
+
+            <a class="nav-link" id="v-pills-userComments-tab" data-toggle="pill" href="#v-pills-userComments"
+               role="tab" aria-controls="v-pills-userComments" aria-selected="false">Check User Comments</a>
+
+            <a class="nav-link" id="v-pills-propertyManagement-tab" data-toggle="pill" href="#v-pills-propertyManagement"
+               role="tab" aria-controls="v-pills-propertyManagement" aria-selected="false">Property
+                Management</a>
+
+            <a class="nav-link" id="v-pills-accountManagement-tab" data-toggle="pill" href="#v-pills-accountManagement"
+               role="tab" aria-controls="v-pills-accountManagement" aria-selected="false">Account Management</a>
+
+            <a class="nav-link" id="v-pills-Appointment-tab" data-toggle="pill" href="#v-pills-Appointment"
+               role="tab" aria-controls="v-pills-Appointment" aria-selected="false" >Appointment</a>
+
+            <a class="nav-link" id="v-pills-Appointmenting-tab" data-toggle="pill" href="#v-pills-Appointmenting"
+               role="tab" aria-controls="v-pills-Appointmenting" aria-selected="false" >Appointing</a>
+
+            <a class="nav-link" id="v-pills-AppointmentRecord-tab" data-toggle="pill" href="#v-pills-AppointmentRecord"
+               role="tab" aria-controls="v-pills-AppointmentRecord" aria-selected="false" >Appointment<br>Record</a>
+
+        </div>
+    </div>
+
+    <div class="col-11">
+        <div class="tab-content " id="v-pills-tabContent">
+            <div class="tab-pane fade  " id="v-pills-home" role="tabpanel"
+                 aria-labelledby="v-pills-home-tab">
+                <div class="container">
+                    <div align="center">
+                        <h1>Daily Login Lucky Draw</h1>
+                        <br>
+                        <h3>Next Draw Available After: </h3><h3 id="luckyDrawCD"></h3>
+                        <table cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td>
+                                    <div class="power_controls">
+                                        <br />
+                                        <br />
+                                        <table hidden="hidden" id="drawPowerTable"  class="power" cellpadding="10" cellspacing="0">
+                                            <tr>
+                                                <th align="center">Power</th>
+                                            </tr>
+                                            <tr>
+                                                <td width="78" align="center" id="pw3" onClick="powerSelected(3);">High</td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center" id="pw2" onClick="powerSelected(2);">Med</td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center" id="pw1" onClick="powerSelected(1);">Low</td>
+                                            </tr>
+                                        </table>
+                                        <br />
+                                        <img hidden="hidden" id="spin_button" src="spin_off.png" alt="Spin" onClick="startSpin();" />
+                                        <br /><br />
+                                        &nbsp;&nbsp;<a href="#" onClick="resetWheel(); return false;" hidden="hidden" id="luckyDrawDrawAgina">Play Again</a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </div>
+                                </td>
+                                <td width="438" height="582" class="the_wheel" align="center" valign="center">
+                                    <canvas id="canvas" width="434" height="434">
+                                        <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please try another.</p>
+                                    </canvas>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <script>
+                        // Set the date we're counting down to
+                        var countDownDate = (new Date().getTime()+5000);//1day=86400000
+                        
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+                        
+                          // Get today's date and time
+                          var now = new Date().getTime();
+                        
+                          // Find the distance between now and the count down date
+                          var distance = countDownDate - now;
+                        
+                          // Time calculations for days, hours, minutes and seconds
+                          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        
+                          // Display the result in the element with id="demo"
+                          document.getElementById("luckyDrawCD").innerHTML =  hours + ":"
+                          + minutes + ":" + seconds;
+                        
+                          // If the count down is finished, write some text
+                          if (distance < 0) {
+                            clearInterval(x);
+                            document.getElementById("luckyDrawCD").innerHTML = "You Can Draw Agina";
+                            $('#luckyDrawDrawAgina').removeAttr("hidden");
+                            $('#spin_button').removeAttr("hidden");
+                            $('#drawPowerTable').removeAttr("hidden");
+                          }
+                        }, 1000);
+                        </script>
+                    <script>
+                        // Create new wheel object specifying the parameters at creation time.
+                        let theWheel = new Winwheel({
+                            'numSegments'  : 8,     // Specify number of segments.
+                            'outerRadius'  : 212,   // Set outer radius so wheel fits inside the background.
+                            'textFontSize' : 14,    // Set font size as desired.
+                            'segments'     :        // Define segments including colour and text.
+                            [
+                               {'fillStyle' : '#FF2D00', 'text' : 'parknshop $50 coupon'},
+                               {'fillStyle' : '#FFF300', 'text' : 'Airticket to UK x2'},
+                               {'fillStyle' : '#6CFF00', 'text' : 'MTR Club 500 points'},
+                               {'fillStyle' : '#00FFC9', 'text' : 'YATA $500 coupon'},
+                               {'fillStyle' : '#0097FF', 'text' : 'Ocrean Park Free ticket'},
+                               {'fillStyle' : '#8700FF', 'text' : 'MTR Club 1000 points'},
+                               {'fillStyle' : '#FF00EC', 'text' : 'YATA $100 coupon'},
+                               {'fillStyle' : '#FF0093', 'text' : 'parknshop $200 coupon'}
+                            ],
+                            'animation' :           // Specify the animation to use.
+                            {
+                                'type'     : 'spinToStop',
+                                'duration' : 5,     // Duration in seconds.
+                                'spins'    : 8,     // Number of complete spins.
+                                'callbackFinished' : alertPrize
+                            }
+                        });
+            
+                        // Vars used by the code in this page to do power controls.
+                        let wheelPower    = 0;
+                        let wheelSpinning = false;
+            
+                        // -------------------------------------------------------
+                        // Function to handle the onClick on the power buttons.
+                        // -------------------------------------------------------
+                        function powerSelected(powerLevel)
+                        {
+                            // Ensure that power can't be changed while wheel is spinning.
+                            if (wheelSpinning == false) {
+                                // Reset all to grey incase this is not the first time the user has selected the power.
+                                document.getElementById('pw1').className = "";
+                                document.getElementById('pw2').className = "";
+                                document.getElementById('pw3').className = "";
+            
+                                // Now light up all cells below-and-including the one selected by changing the class.
+                                if (powerLevel >= 1) {
+                                    document.getElementById('pw1').className = "pw1";
+                                }
+            
+                                if (powerLevel >= 2) {
+                                    document.getElementById('pw2').className = "pw2";
+                                }
+            
+                                if (powerLevel >= 3) {
+                                    document.getElementById('pw3').className = "pw3";
+                                }
+            
+                                // Set wheelPower var used when spin button is clicked.
+                                wheelPower = powerLevel;
+            
+                                // Light up the spin button by changing it's source image and adding a clickable class to it.
+                                document.getElementById('spin_button').src = "spin_on.png";
+                                document.getElementById('spin_button').className = "clickable";
+                                
+                                
+                            }
+                        }
+            
+                        // -------------------------------------------------------
+                        // Click handler for spin button.
+                        // -------------------------------------------------------
+                        function startSpin()
+                        {
+                            // Ensure that spinning can't be clicked again while already running.
+                            if (wheelSpinning == false) {
+                                // Based on the power level selected adjust the number of spins for the wheel, the more times is has
+                                // to rotate with the duration of the animation the quicker the wheel spins.
+                                if (wheelPower == 1) {
+                                    theWheel.animation.spins = 3;
+                                } else if (wheelPower == 2) {
+                                    theWheel.animation.spins = 8;
+                                } else if (wheelPower == 3) {
+                                    theWheel.animation.spins = 15;
+                                }
+            
+                                // Disable the spin button so can't click again while wheel is spinning.
+                                document.getElementById('spin_button').src       = "spin_off.png";
+                                document.getElementById('spin_button').className = "";
+                                
+                                // Begin the spin animation by calling startAnimation on the wheel object.
+                                theWheel.startAnimation();
+            
+                                // Set to true so that power can't be changed and spin button re-enabled during
+                                // the current animation. The user will have to reset before spinning again.
+                                wheelSpinning = true;
+
+
+                                //---------------------------------------
+                                $('#luckyDrawDrawAgina').attr("hidden",true);
+                                $('#spin_button').attr("hidden",true);
+                                $('#drawPowerTable').attr("hidden",true);
+
+                                var countDownDate = (new Date().getTime()+86400000);//1day=86400000
+                        
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+                        
+                          // Get today's date and time
+                          var now = new Date().getTime();
+                        
+                          // Find the distance between now and the count down date
+                          var distance = countDownDate - now;
+                        
+                          // Time calculations for days, hours, minutes and seconds
+                          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        
+                          // Display the result in the element with id="demo"
+                          document.getElementById("luckyDrawCD").innerHTML =  hours + ":"
+                          + minutes + ":" + seconds;
+                        
+                          // If the count down is finished, write some text
+                          if (distance < 0) {
+                            clearInterval(x);
+                            document.getElementById("luckyDrawCD").innerHTML = "You Can Draw Agina";
+                            $('#luckyDrawDrawAgina').removeAttr("hidden");
+                            $('#spin_button').removeAttr("hidden");
+                            $('#drawPowerTable').removeAttr("hidden");
+                          }
+                        }, 1000);
+                            }
+                        }
+            
+                        // -------------------------------------------------------
+                        // Function for reset button.
+                        // -------------------------------------------------------
+                        function resetWheel()
+                        {
+                            theWheel.stopAnimation(false);  // Stop the animation, false as param so does not call callback function.
+                            theWheel.rotationAngle = 0;     // Re-set the wheel angle to 0 degrees.
+                            theWheel.draw();                // Call draw to render changes to the wheel.
+            
+                            document.getElementById('pw1').className = "";  // Remove all colours from the power level indicators.
+                            document.getElementById('pw2').className = "";
+                            document.getElementById('pw3').className = "";
+            
+                            wheelSpinning = false;          // Reset to false to power buttons and spin can be clicked again.
+                        }
+            
+                        // -------------------------------------------------------
+                        // Called when the spin animation has finished by the callback feature of the wheel because I specified callback in the parameters
+                        // note the indicated segment is passed in as a parmeter as 99% of the time you will want to know this to inform the user of their prize.
+                        // -------------------------------------------------------
+                        function alertPrize(indicatedSegment)
+                        {
+                            
+                        
+                            alert("You have won " + indicatedSegment.text);
+                            
+                        }
+                    </script>
+                </div>
+            </div>
+            <div class="tab-pane fade show active " id="v-pills-profile" role="tabpanel"
+                 aria-labelledby="v-pills-profile-tab">
+                <div class="container">
+                    <div class="form-group">
+                        <label for="email" style="font-size: 30px;">Email address</label>
+                        <input type="email" class="form-control" id="email" disabled="disabled">
+                    </div>
+                    <div class="form-group" style="font-size: 30px;">
+                        <label for="Clientname">Full Name</label>
+                        <input type="text" class="form-control" id="Clientname" disabled="disabled">
+                    </div>
+                    <div class="form-group" style="font-size: 30px;">
+                        <label for="phone">Phone number</label>
+                        <div class="row">
+                            <input type="text" class="form-control" placeholder="+852" disabled style="width: 70px;margin-left: 15px">
+
+                            <div class="col">
+                                <input type="text" class="form-control" id="phone" disabled="disabled">
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="form-group" style="font-size: 30px;">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" disabled="disabled">
+                        <div class="row">
+                            <div class="col">
+                                <input type="checkbox" onclick="myFunction()" width="100px" height="200px"><b style="height: 20px">Show Password</b>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button type="button" id="EditProfileBtn" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+                        Edit Profile
+                    </button>
+                    <div class="modal fade pt-page-rotateSlideIn " id="staticBackdrop" data-backdrop="static" data-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header" id="NewProfileInformation">
+                                    <h5 class="modal-title" id="staticBackdropLabel">New Profile Information</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true" id="closeTheUpdateBtn">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="newEmail">Email address<span style="color: red">*</span></label>
+                                        <div class="row">
+                                            <input type="email" class="form-control" id="newEmail" placeholder="New Email" style="width: 130px;margin-left: 15px">
+                                            <div class="col" style="width: 100px">
+                                                <input type="text" class="form-control" id="fixEmailselector" placeholder="@test.com" value="@test.com" disabled >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label for="newFullName">Full Name<span style="color: red">*</span></label>
+                                            </div>
+                                            <div class="col">
+                                                <label for="newNickName">Nick Name<span style="color: red">*</span></label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="newFullName"
+                                                       placeholder="New Full Name">
+                                            </div>
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="newNickName"
+                                                       placeholder="Nick Name">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label for="Gender">Gender<span style="color: red">*</span></label>
+                                            </div>
+                                            <div class="col">
+                                                <label for="newAge">Age<span style="color: red">*</span></label>
+                                            </div>
+                                            <div class="col">
+                                                <label for="newAge">Area<span style="color: red">*</span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <select type="text" class="form-control" id="Gender">
+                                                    <option>Male</option>
+                                                    <option>Female</option>
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <select id="newAge" class="1-100" style="width: 50px;height: 35px;margin-left: 15px;margin-right: 10px"></select>
+                                            </div>
+                                            <i class="fa fa-location-arrow" style="margin-top: 5px"></i>
+                                            <div class="col">
+                                                <input list="NewArea" name="select" style="margin-top: 2px">
+                                                <datalist class="form-control" id="NewArea" hidden>
+                                                    <option disabled hidden selected value="Area"/>
+                                                    <option value="Tsuen Wan"/>
+                                                    <option value="Yuen Long"/>
+                                                    <option value="Ma On Shan"/>
+                                                    <option value="Shatin"/>
+                                                </datalist><div class="validation"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <p>Address <span style="color: red">*</span></p>
+                                        <input class="form-control" type="text" name="newaddress" id="newaddress1" data-rule="required" placeholder="Address1" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                                        <input class="form-control" type="text" name="newaddress" id="newaddress2" data-rule="required" placeholder="Address2" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                                        <input class="form-control" type="text" name="newaddress" id="newaddress3" data-rule="required" placeholder="Address3" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                                        <div class="validation"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPhone">Phone number<span style="color: red">*</span></label>
+                                        <div class="row">
+                                            <input type="text" class="form-control" placeholder="+852" disabled style="width: 70px;margin-left: 15px">
+
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="newPhone">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword">Password<span style="color: red">*</span></label>
+                                        <input type="password" class="form-control" id="newPassword"
+                                               placeholder="New Password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPasswordConfirm">Confirm Password<span style="color: red">*</span></label>
+                                        <input type="password" class="form-control" id="newPasswordConfirm"
+                                               placeholder="New Password">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelProfileInfo">Cancel</button>
+                                    <button type="button" class="btn btn-primary" id="UpdateProfileInfo">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-userComments" role="tabpanel"
+                 aria-labelledby="v-pills-userComments-tab">
+                <div class="container">
+                    <table class="table" style="text-align: center">
+                        <thead>
+                            <tr>
+                                <th scope="col">Agent Photo</th>
+                                <th scope="col">Agent ID</th>
+                                <th scope="col">Agent Name</th>
+                                <th scope="col">Agent Contact</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="UserCommentsBody" style="text-align: center;">
+
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col">
+                            <button class="exportToExcel btn btn-success fa fa-file-excel-o">&nbsp;&nbsp;Export to Excel</button>
+                        </div>
+                        <div class="col">
+                            <div class="columns download">
+                                <p>
+                                    <a href="assets/pdf/Agent.pdf" class="button" download><i class="fa fa-download"></i>Export to PDF</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-propertyManagement" role="tabpanel"
+                 aria-labelledby="v-pills-propertyManagement-tab">
+                <div class="container">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Property ID</th>
+                            <th scope="col">Photo</th>
+                            <th scope="col">Full Address</th>
+                            <th scope="col">Price/fts</th>
+                            <th scope="col">Size</th>
+                            <th scope="col">Total Price</th>
+                            <th scope="col">Layout</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Available</th>
+                            <th scope="col">Sell</th>
+                            <th scope="col">Rental</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="genPropertyData" style="text-align: center">
+
+                        </tbody>
+                    </table>
+                    <button class="exportToExcel btn btn-success fa fa-file-excel-o">&nbsp;&nbsp;Export to Excel</button>
+                    <button style="text-align: center" type="button" id="uploadNewPropertyBtn" class="btn btn-primary" data-toggle="modal" data-target="#uploadNewProperty">
+                        Upload New property
+                    </button>
+                    <div class="columns download">
+                        <p>
+                            <a href="assets/pdf/Property.pdf" class="button" download><i class="fa fa-download"></i>Export to PDF</a>
+                        </p>
+                    </div>
+
+                    <div class="modal fade pt-page-rotateSlideIn" id="uploadNewProperty" data-backdrop="static" data-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadNewProperty2">New Property Information</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true" id="viewCloseTheUpdateBtn2">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="newPropertyPhotos">Photos</label>
+                                        <input type="file" class="form-control" id="newPropertyPhotos" multiple>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPropertyAddress">Full Address</label>
+                                        <input type="text" class="form-control" id="newPropertyAddress"
+                                               placeholder="Full Address">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertySize">Price</label>
+                                                <input type="number" class="form-control" id="newPropertyPrice"
+                                                       placeholder="Property Price(fts)">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertySize">Size</label>
+                                                <input type="number" class="form-control" id="newPropertySize"
+                                                       placeholder="Property Size(fts)">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertyLayout">Layout</label>
+                                                <input type="number" class="form-control" id="newPropertyLayout"
+                                                       placeholder="Property Layout">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertyLayout">Age(Yrs)</label>
+                                                <input type="number" class="form-control" id="newPropertyAge"
+                                                       placeholder="Property Age">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="uploadNewPropertyPageclose" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="InsideButtonuploadProperty">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade pt-page-rotateSlideIn" id="uploadEditProperty" data-backdrop="static" data-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadEditProperty2">Edit Property Information</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true" id="uploadEditPropertyCloseBtn2">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="newPropertyAddress">Full Address</label>
+                                        <input type="text" class="form-control" id="EditPropertyAddress"
+                                               placeholder="Full Address">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertySize">Price</label>
+                                                <input type="number" class="form-control" id="EditPropertyPrice"
+                                                       placeholder="Property Price(fts)">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertySize">Size</label>
+                                                <input type="number" class="form-control" id="EditPropertySize"
+                                                       placeholder="Property Size(fts)">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertyLayout">Layout</label>
+                                                <input type="number" class="form-control" id="EditPropertyLayout"
+                                                       placeholder="Property Layout">
+                                                <div class="dropdown show" style="width: 100%">
+                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="EditPropertyRoomType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Room Type
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink"  id="editProfileRoomType" >
+                                                        <a class="dropdown-item" href="#" id="EditProfileRm">Rm</a>
+                                                        <a class="dropdown-item" href="#" id="EditProfileAreaOrRm">Area/Rm</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="newPropertyLayout">Age</label>
+                                                <input type="number" class="form-control" id="EditPropertyAge"
+                                                       placeholder="Property Age">
+                                                <input type="number" class="form-control"
+                                                       placeholder="Yrs" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="EditPropertyPageclose" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="EditInsideButtonuploadProperty">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-accountManagement" role="tabpanel" aria-labelledby="v-pills-accountManagement-tab">
+                <div class="container">
+                    <input type="text" width="500px" style="margin-top: 5px;margin-bottom: 5px" id="AccountSearch">
+                    <table class="table" style="text-align: center" id="ForAgentListSearch">
+                        <thead>
+                        <tr>
+                            <th scope="col">Account ID</th>
+                            <th scope="col">Account Type</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Join Date</th>
+                            <th scope="col">Enable</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="PrintAgentList">
+
+                        </tbody>
+                    </table>
+                    <button class="exportToExcel btn btn-success fa fa-file-excel-o">&nbsp;&nbsp;Export to Excel</button>
+                    <button style="text-align: center" type="button" id="ViewAccountBtn" class="btn btn-primary fa fa-plus-square" data-toggle="modal" data-target="#viewuserAccount">
+                        &nbsp;&nbsp;Create Agent Account
+                    </button>
+
+                    <div class="modal fade pt-page-rotateSlideIn" id="viewuserAccount" data-backdrop="static" data-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="viewuserAccount2">Create Agent Information</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true" id="viewCloseTheUpdateBtn">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="newEmail">Email address</label>
+                                        <div class="row">
+                                            <input type="email" class="form-control" id="newAgentEmail" placeholder="New Email" required style="width: 130px;margin-left: 15px">
+                                            <div class="col" style="width: 100px">
+                                                <input type="text" class="form-control" placeholder="@test.com" value="@test.com" disabled >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newAgentName">Full Name</label>
+                                        <input type="text" class="form-control" id="newAgentName"
+                                               placeholder="New Full Name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPhone">Phone number</label>
+                                        <div class="row">
+                                            <input type="text" class="form-control" placeholder="+852" disabled style="width: 70px;margin-left: 15px">
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="newAgentPhone"
+                                                       placeholder="New Phone Number" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label for="Gender">Gender<span style="color: red">*</span></label>
+                                            </div>
+                                            <div class="col">
+                                                <label for="newAge" style="margin-left: 15px">Age<span style="color: red">*</span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <select type="text" class="form-control" id="NewAgentGender">
+                                                    <option>Male</option>
+                                                    <option>Female</option>
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <select id="newAgentAge" class="1-100" style="width: 50px;height: 35px;margin-left: 15px"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword">Password</label>
+                                        <input type="password" class="form-control" id="newAgentPassword"
+                                               placeholder="New Password" required>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelNewAgentButton">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="NewAgent">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-Appointment" role="tabpanel" aria-labelledby="v-pills-Appointment-tab">
+                <div class="container">
+                    <table class="table" style="text-align: center" id="AppointmentBodySearch">
+                        <thead>
+
+                        </thead>
+                        <tbody id="AppointmentBody">
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-Appointmenting" role="tabpanel" aria-labelledby="v-pills-Appointment-tab">
+                <div class="container">
+                    <table class="table" style="text-align: center" id="AppointmentingTable">
+                        <thead>
+
+                        </thead>
+                        <tbody id="AppointmentingBody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="v-pills-AppointmentRecord" role="tabpanel" aria-labelledby="v-pills-Appointment-tab">
+                <div class="container">
+                    <table class="table" style="text-align: center" id="AppointmentRecordTable">
+                        <thead>
+
+                        </thead>
+                        <tbody id="AppointmentRecordBody">
+
+                        </tbody>
+                    </table>
+
+                    <button class="exportToExcel btn btn-success fa fa-file-excel-o">&nbsp;&nbsp;Export to Excel</button>
+
+                        <p>
+                            <a href="assets/pdf/AppointmentRecord.pdf" class="button" download><i class="fa fa-download"></i>Export to PDF</a>
+                        </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="text-muted">
+    <div class="container">
+        <br>
+        <p style="margin-left: auto;margin-right: auto">
+            Dream House property HK Inc. 2015-2020.
+        </p>
+        <p class="float-right">
+            <a href="#" class="btn btn-dark">Back to top</a>
+        </p>
+    </div>
+</footer>
+</body>
+
+</html>

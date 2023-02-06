@@ -1,0 +1,18 @@
+User 1:
+email: user1@test.com
+password: 123
+
+
+User 2:
+email: test@test.com
+password: test
+
+
+Agent:
+email: agent1@test.com
+password": 123
+
+
+Manager:
+email: manager1@test.com
+password: 123

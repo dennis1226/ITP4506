@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="pt-page-flipInLeft">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment</title>
+    <script type="text/javascript" src="assets/jslib/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/popper-1.16.1.min.js"></script>
+    <script type="text/javascript" src="assets/jslib/bootstrap-4.5.2.min.js"></script>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <script src="assets/jslib/jquery.cookie.js"></script>
+    <link href="assets/css/index.css" rel="stylesheet">
+    <link href="assets/css/animations.css" rel="stylesheet">
+    <link href="assets/css/Appointment.css" rel="stylesheet">
+    <link href="assets/css/animations.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            $("#user").hide();
+
+            $("#user").click(function () {
+                $("#userTypeButton").text("Name");
+                userType = "user";
+                $("#user").hide();
+                $("#agent").show();
+                $("#manager").show();
+            });
+            $("#agent").click(function () {
+                $("#userTypeButton").text("Price");
+                userType = "agent";
+                $("#user").show();
+                $("#agent").hide();
+                $("#manager").show();
+            });
+            $("#manager").click(function () {
+                $("#userTypeButton").text("Place");
+                userType = "manager";
+                $("#user").show();
+                $("#agent").show();
+                $("#manager").hide();
+            });
+            //for top menu bar (check login)
+            var usertype = $.cookie('usertype');
+            var useremail = $.cookie('useremail');
+            var password = $.cookie('password');
+            switch (usertype) {
+                case 'user':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                case 'agent':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                case 'manager':
+                    $("#LoginOrRegisterPlace #Login,#LoginOrRegisterPlace #Register").hide();
+                    $("#LoginOrRegisterPlace").append(
+                        '<a className="nav-link" style="color: white;margin-left: 5px">' + useremail + '</a>' +
+                        '<a className="nav-link" href="Login.html" id="LogOut" style="color: #00FFFF;margin-left: 5px">LogOut</a>'
+                    )
+                    $("#Management").removeAttr('hidden');
+                    $("#ContactBar").remove();
+                    break;
+                default:
+                    break;
+            }
+            $("#LogOut").click(function () {
+                $.removeCookie('usertype');
+                $.removeCookie('useremail');
+                $.removeCookie('password');
+                $("#Management").attr('hidden');
+                $("#ContactBar").show();
+            });
+        })
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html">Dream House property HK Inc.</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
+            aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+    </button>
+    <div class="collapse navbar-collapse" id="navbarsExample04">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="About.html" id="Home">About</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="propertyList.html">Property List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="ContactBar">Agent List</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="Management.html" id="Management" hidden>Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="MortgageCal.html" id="MortgageCal">MortgageCal</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" id="LoginOrRegisterPlace">
+            <a class="btn btn-outline-success my-2 my-sm-0" href="#" id="EnquNum">Enquiry:2436-8333</a>
+            <a class="nav-link" href="Login.html" id="Login">Login</a>
+            <a class="nav-link" href="Register.html" id="Register">Register</a>
+            <!--<input class="form-control" type="text" placeholder="Search">-->
+        </form>
+    </div>
+</nav>
+
+<button type="button" id="EditProfileBtn" class="btn btn-primary" data-toggle="modal" data-target="#AppointmentForm">
+    Edit Profile
+</button>
+<div class="modal fade" id="AppointmentForm" data-backdrop="static" data-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="NewProfileInformation">
+                <h5 class="modal-title" id="staticBackdropLabel">New Profile Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" id="closeTheUpdateBtn">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newEmail">Email address<span style="color: red">*</span></label>
+                    <div class="row">
+                        <input type="email" class="form-control" id="newEmail" placeholder="New Email" style="width: 130px;margin-left: 15px">
+                        <div class="col" style="width: 100px">
+                            <input type="text" class="form-control" id="fixEmailselector" placeholder="@test.com" value="@test.com" disabled >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="newFullName">Full Name<span style="color: red">*</span></label>
+                        </div>
+                        <div class="col">
+                            <label for="newNickName">Nick Name<span style="color: red">*</span></label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control" id="newFullName"
+                                   placeholder="New Full Name">
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" id="newNickName"
+                                   placeholder="Nick Name">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="Gender">Gender<span style="color: red">*</span></label>
+                        </div>
+                        <div class="col">
+                            <label for="newAge">Age<span style="color: red">*</span></label>
+                        </div>
+                        <div class="col">
+                            <label for="newAge">Area<span style="color: red">*</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <select type="text" class="form-control" id="Gender">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="newAge" class="1-100" style="width: 50px;height: 35px;margin-left: 15px"></select>
+                        </div>
+                        <div class="col">
+                            <span class="icon-case"><i class="fa fa-location-arrow"></i></span>
+                            <input list="NewArea" name="select" style="margin-top: 2px">
+                            <datalist class="form-control" id="NewArea" hidden>
+                                <option disabled hidden selected value="Area"/>
+                                <option value="Tsuen Wan"/>
+                                <option value="Yuen Long"/>
+                                <option value="Ma On Shan"/>
+                                <option value="Shatin"/>
+                            </datalist><div class="validation"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p>Address <span style="color: red">*</span></p>
+                    <span class="icon-case"><i class="fa fa-location-arrow"></i></span>
+                    <input class="form-control" type="text" name="newaddress" id="newaddress1" data-rule="required" placeholder="Address1" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                    <input class="form-control" type="text" name="newaddress" id="newaddress2" data-rule="required" placeholder="Address2" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                    <input class="form-control" type="text" name="newaddress" id="newaddress3" data-rule="required" placeholder="Address3" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Adresse' doit être renseigné."/>
+                    <div class="validation"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPhone">Phone number<span style="color: red">*</span></label>
+                    <div class="row">
+                        <input type="text" class="form-control" placeholder="+852" disabled style="width: 70px;margin-left: 15px">
+
+                        <div class="col">
+                            <input type="text" class="form-control" id="newPhone">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Password<span style="color: red">*</span></label>
+                    <input type="password" class="form-control" id="newPassword"
+                           placeholder="New Password">
+                </div>
+                <div class="form-group">
+                    <label for="newPasswordConfirm">Confirm Password<span style="color: red">*</span></label>
+                    <input type="password" class="form-control" id="newPasswordConfirm"
+                           placeholder="New Password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelProfileInfo">Cancel</button>
+                <button type="button" class="btn btn-primary" id="UpdateProfileInfo">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
